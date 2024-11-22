@@ -1,0 +1,28 @@
+name: writea
+description: "String Editor"
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  intl: ^0.20.0
+  window_manager: ^0.4.3
+  bloc: ^8.1.4
+  flutter_bloc: ^8.1.6
+  path: ^1.9.0
+  path_provider: ^2.1.5
+  equatable: ^2.0.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
