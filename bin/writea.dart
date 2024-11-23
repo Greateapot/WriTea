@@ -3,9 +3,12 @@
 import 'package:writea/text_processor/text_processor.dart';
 
 void main() async {
-  const initialValue = "Hello, World!";
+  const initialValue = "hello world";
 
-  final textProcessor = TextProcessor(TextProcessorState.value(initialValue));
+  final initialState = TextProcessorState.value(initialValue);
+  final textProcessorController = TextProcessorController(initialState);
+  final textProcessor = TextProcessor(textProcessorController);
+
   final invoker = TextProcessorCommandInvoker();
   final parser = TextProcessorCommandParser(
     textProcessor: textProcessor,
@@ -13,11 +16,9 @@ void main() async {
     redoCallback: invoker.redo,
   );
 
-  print('Initial value: "$initialValue"');
+  print('Initial text: "${textProcessorController.value.text}"');
 
-  final commands = await parser.parse('writea_pyb/example.txt').toList();
+  invoker.process(parser.parseFile('writea_pyb/example.txt'));
 
-  invoker.process(commands);
-
-  print('Result value: "${textProcessor.value}"');
+  print('Result text: "${textProcessorController.value.text}"');
 }

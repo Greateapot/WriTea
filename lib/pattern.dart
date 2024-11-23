@@ -16,5 +16,6 @@ abstract interface class Invoker<R extends Receiver> {
 
 abstract interface class CommandParser<R extends Receiver,
     I extends Invoker<R>> {
-  Stream<Command<R>> parse(String path);
+  List<Command<R>> parseFile(String path);
+  List<Command<R>> parseLines(List<String> lines);
 }

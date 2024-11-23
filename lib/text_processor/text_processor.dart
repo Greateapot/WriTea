@@ -10,71 +10,69 @@ import '../utils/types.dart';
 
 part 'text_processor_command_invoker.dart';
 part 'text_processor_command_parser.dart';
+part 'text_processor_controller.dart';
+part 'text_processor_state.dart';
+
+/// Commands
 part 'text_processor_commands/text_processor_copy_command.dart';
 part 'text_processor_commands/text_processor_delete_command.dart';
 part 'text_processor_commands/text_processor_insert_command.dart';
 part 'text_processor_commands/text_processor_paste_command.dart';
 part 'text_processor_commands/text_processor_redo_command.dart';
 part 'text_processor_commands/text_processor_undo_command.dart';
-part 'text_processor_state.dart';
 
-class TextProcessor implements Receiver {
-  TextProcessor(TextProcessorState initialState) : __state = initialState;
+class TextProcessor<Controller extends TextProcessorController>
+    implements Receiver {
+  TextProcessor(Controller controller) : _controller = controller;
 
-  TextProcessorState __state;
+  final Controller _controller;
 
-  TextProcessorState get _state => __state;
-  set _state(TextProcessorState state) {
-    dev.log('Old: $__state\n New: $state\n');
-
-    __state = state;
-  }
-
-  String get value => __state.value;
+  TextProcessorState get _state => _controller.value;
+  set _state(TextProcessorState state) => _controller.value = state;
 
   void copy(int idx1, int idx2) {
-    var isValid = idx2 >= idx1;
-    isValid &= idx1 > -1;
-    isValid &= idx2 > -1;
-    isValid &= idx1 < _state.value.length;
-    isValid &= idx2 < _state.value.length;
+    var isValid = idx2 > idx1;
+    isValid &= idx1 >= 0;
+    isValid &= idx2 >= 0;
+    isValid &= idx1 <= _state.text.length;
+    isValid &= idx2 <= _state.text.length;
 
     if (!isValid) throw OutOfBoundsException();
 
-    if (_state.value.isEmpty) {
+    if (_state.text.isEmpty) {
       /// Nothing to copy
       return;
     }
 
-    final buffer = _state.value.substring(idx1, idx2);
+    final buffer = _state.text.substring(idx1, idx2);
 
     _state = _state.copyWith(buffer: buffer);
   }
 
   void delete(int idx1, int idx2) {
-    var isValid = idx2 >= idx1;
-    isValid &= idx1 > -1;
-    isValid &= idx2 > -1;
-    isValid &= idx1 < _state.value.length;
-    isValid &= idx2 < _state.value.length;
+    var isValid = idx2 > idx1;
+    isValid &= idx1 >= 0;
+    isValid &= idx2 >= 0;
+    isValid &= idx1 <= _state.text.length;
+    isValid &= idx2 <= _state.text.length;
 
     if (!isValid) throw OutOfBoundsException();
 
-    if (_state.value.isEmpty) {
+    if (_state.text.isEmpty) {
       /// Nothing to delete
       return;
     }
 
-    final start = _state.value.substring(0, idx1);
-    final end = _state.value.substring(idx2);
-    final value = start + end;
+    final start = _state.text.substring(0, idx1);
+    final end = _state.text.substring(idx2);
+    final text = start + end;
 
-    _state = _state.copyWith(value: value);
+    _state = _state.copyWith(text: text);
   }
 
   void insert(String string, int idx) {
-    var isValid = idx > -1;
-    isValid &= idx < _state.value.length;
+    var isValid = idx >= 0;
+    isValid &= idx <= _state.text.length;
 
     if (!isValid) throw OutOfBoundsException();
 
@@ -83,16 +81,16 @@ class TextProcessor implements Receiver {
       return;
     }
 
-    final start = _state.value.substring(0, idx);
-    final end = _state.value.substring(idx);
-    final value = start + string + end;
+    final start = _state.text.substring(0, idx);
+    final end = _state.text.substring(idx);
+    final text = start + string + end;
 
-    _state = _state.copyWith(value: value);
+    _state = _state.copyWith(text: text);
   }
 
   void paste(int idx) {
-    var isValid = idx > -1;
-    isValid &= idx < _state.value.length;
+    var isValid = idx >= 0;
+    isValid &= idx <= _state.text.length;
 
     if (!isValid) throw OutOfBoundsException();
 
@@ -101,11 +99,11 @@ class TextProcessor implements Receiver {
       return;
     }
 
-    final start = _state.value.substring(0, idx);
-    final end = _state.value.substring(idx);
-    final value = start + _state.buffer + end;
+    final start = _state.text.substring(0, idx);
+    final end = _state.text.substring(idx);
+    final text = start + _state.buffer + end;
 
-    _state = _state.copyWith(value: value);
+    _state = _state.copyWith(text: text);
   }
 
   void _restore(TextProcessorState state) {
