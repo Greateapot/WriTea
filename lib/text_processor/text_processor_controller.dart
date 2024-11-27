@@ -1,7 +1,7 @@
 part of 'text_processor.dart';
 
 abstract interface class TextProcessorController {
-  factory TextProcessorController(TextProcessorState initialState) =>
+  factory TextProcessorController({required TextProcessorState initialState}) =>
       _TextProcessorControllerImpl(initialState);
 
   set value(TextProcessorState value);

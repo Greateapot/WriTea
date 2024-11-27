@@ -1,4 +1,4 @@
-class Receiver {}
+base class Receiver {}
 
 abstract interface class Command<R extends Receiver> {
   void execute();
@@ -14,8 +14,7 @@ abstract interface class Invoker<R extends Receiver> {
   void process(final List<Command<R>> commands);
 }
 
-abstract interface class CommandParser<R extends Receiver,
-    I extends Invoker<R>> {
+abstract interface class CommandParser<R extends Receiver> {
   List<Command<R>> parseFile(String path);
   List<Command<R>> parseLines(List<String> lines);
 }

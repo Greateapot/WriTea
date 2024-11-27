@@ -1,7 +1,6 @@
 part of 'text_processor.dart';
 
-class TextProcessorCommandParser
-    implements CommandParser<TextProcessor, TextProcessorCommandInvoker> {
+class TextProcessorCommandParser implements CommandParser<TextProcessor> {
   static final RegExp pattern = RegExp(r'^(\w+).*?$');
 
   TextProcessorCommandParser({
@@ -31,7 +30,9 @@ class TextProcessorCommandParser
       if (line.isEmpty) continue;
 
       final match = pattern.firstMatch(line);
-      if (match == null) throw InvalidInputException();
+      if (match == null) {
+        throw InvalidInputException("line: $line doesn't contains command.");
+      }
 
       switch (match.group(1)) {
         case TextProcessorUndoCommand.keyword:
@@ -53,7 +54,8 @@ class TextProcessorCommandParser
           commands.add(_parseTextProcessorPasteCommand(line));
           break;
         default:
-          throw UnknownCommandException();
+          throw UnknownCommandException(
+              'line $line contains invalid/unknown command');
       }
     }
 
@@ -62,21 +64,30 @@ class TextProcessorCommandParser
 
   Command<TextProcessor> _parseTextProcessorUndoCommand(String line) {
     final match = TextProcessorUndoCommand.pattern.firstMatch(line);
-    if (match == null) throw InvalidArgumentsException();
+    if (match == null) {
+      throw InvalidArgumentsException(
+          'line $line contaiins invalid command arguments');
+    }
 
     return TextProcessorUndoCommand(undoCallback: _undoCallback);
   }
 
   Command<TextProcessor> _parseTextProcessorRedoCommand(String line) {
     final match = TextProcessorRedoCommand.pattern.firstMatch(line);
-    if (match == null) throw InvalidArgumentsException();
+    if (match == null) {
+      throw InvalidArgumentsException(
+          'line $line contaiins invalid command arguments');
+    }
 
     return TextProcessorRedoCommand(redoCallback: _redoCallback);
   }
 
   Command<TextProcessor> _parseTextProcessorCopyCommand(String line) {
     final match = TextProcessorCopyCommand.pattern.firstMatch(line);
-    if (match == null) throw InvalidArgumentsException();
+    if (match == null) {
+      throw InvalidArgumentsException(
+          'line $line contaiins invalid command arguments');
+    }
 
     /// num -> index
     final idx1 = int.parse(match.group(1)!) - 1;
@@ -91,7 +102,10 @@ class TextProcessorCommandParser
 
   Command<TextProcessor> _parseTextProcessorDeleteCommand(String line) {
     final match = TextProcessorDeleteCommand.pattern.firstMatch(line);
-    if (match == null) throw InvalidArgumentsException();
+    if (match == null) {
+      throw InvalidArgumentsException(
+          'line $line contaiins invalid command arguments');
+    }
 
     /// num -> index
     final idx1 = int.parse(match.group(1)!) - 1;
@@ -106,7 +120,10 @@ class TextProcessorCommandParser
 
   Command<TextProcessor> _parseTextProcessorInsertCommand(String line) {
     final match = TextProcessorInsertCommand.pattern.firstMatch(line);
-    if (match == null) throw InvalidArgumentsException();
+    if (match == null) {
+      throw InvalidArgumentsException(
+          'line $line contaiins invalid command arguments');
+    }
 
     /// num -> index
     final string = match.group(1)!;
@@ -121,7 +138,10 @@ class TextProcessorCommandParser
 
   Command<TextProcessor> _parseTextProcessorPasteCommand(String line) {
     final match = TextProcessorPasteCommand.pattern.firstMatch(line);
-    if (match == null) throw InvalidArgumentsException();
+    if (match == null) {
+      throw InvalidArgumentsException(
+          'line $line contaiins invalid command arguments');
+    }
 
     /// num -> index
     final idx = int.parse(match.group(1)!) - 1;

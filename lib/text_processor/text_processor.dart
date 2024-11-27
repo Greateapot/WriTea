@@ -21,12 +21,13 @@ part 'text_processor_commands/text_processor_paste_command.dart';
 part 'text_processor_commands/text_processor_redo_command.dart';
 part 'text_processor_commands/text_processor_undo_command.dart';
 
-class TextProcessor<Controller extends TextProcessorController>
-    implements Receiver {
-  TextProcessor(Controller controller) : _controller = controller;
+final class TextProcessor<Controller extends TextProcessorController>
+    extends Receiver {
+  TextProcessor({required Controller controller}) : _controller = controller;
 
   final Controller _controller;
 
+  /// shortcuts
   TextProcessorState get _state => _controller.value;
   set _state(TextProcessorState state) => _controller.value = state;
 
@@ -37,7 +38,11 @@ class TextProcessor<Controller extends TextProcessorController>
     isValid &= idx1 <= _state.text.length;
     isValid &= idx2 <= _state.text.length;
 
-    if (!isValid) throw OutOfBoundsException();
+    if (!isValid) {
+      throw OutOfRangeException(
+          'error copy: idx (idx1: ${idx1 + 1}, idx2: ${idx2 + 1}) '
+          'out of range [1..${_state.text.length + 1}]');
+    }
 
     if (_state.text.isEmpty) {
       /// Nothing to copy
@@ -56,7 +61,10 @@ class TextProcessor<Controller extends TextProcessorController>
     isValid &= idx1 <= _state.text.length;
     isValid &= idx2 <= _state.text.length;
 
-    if (!isValid) throw OutOfBoundsException();
+    if (!isValid) {
+      throw OutOfRangeException('error delete: idx (idx1: ${idx1 + 1}, '
+          'idx2: ${idx2 + 1}) out of range [1..${_state.text.length + 1}]');
+    }
 
     if (_state.text.isEmpty) {
       /// Nothing to delete
@@ -74,7 +82,10 @@ class TextProcessor<Controller extends TextProcessorController>
     var isValid = idx >= 0;
     isValid &= idx <= _state.text.length;
 
-    if (!isValid) throw OutOfBoundsException();
+    if (!isValid) {
+      throw OutOfRangeException('error insert: idx ${idx + 1} '
+          'out of range [1..${_state.text.length + 1}]');
+    }
 
     if (string.isEmpty) {
       /// Nothing to insert
@@ -92,7 +103,10 @@ class TextProcessor<Controller extends TextProcessorController>
     var isValid = idx >= 0;
     isValid &= idx <= _state.text.length;
 
-    if (!isValid) throw OutOfBoundsException();
+    if (!isValid) {
+      throw OutOfRangeException('error paste: idx ${idx + 1} '
+          'out of range [1..${_state.text.length + 1}]');
+    }
 
     if (_state.buffer.isEmpty) {
       /// Nothing to paste

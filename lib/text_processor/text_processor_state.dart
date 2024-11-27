@@ -12,8 +12,8 @@ class TextProcessorState extends Equatable {
   factory TextProcessorState.empty() =>
       const TextProcessorState(text: "", buffer: "");
 
-  factory TextProcessorState.value(String text) =>
-      TextProcessorState(text: text, buffer: "");
+  factory TextProcessorState.value({required String initialValue}) =>
+      TextProcessorState(text: initialValue, buffer: "");
 
   TextProcessorState copyWith({String? text, String? buffer}) =>
       TextProcessorState(
